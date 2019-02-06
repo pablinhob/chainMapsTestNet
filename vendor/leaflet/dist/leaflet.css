@@ -95,7 +95,7 @@
 	height: 1px;
 	}
 .lvml {
-	behavior: url(#default#VML);
+	behavior: url(leaflet.css);
 	display: inline-block;
 	position: absolute;
 	}
@@ -376,7 +376,7 @@
 
 /* Default icon URLs */
 .leaflet-default-icon-path {
-	background-image: url(images/);
+	background-image: url(http://localhost/ggis/vendor/leaflet/dist/images/);
 	}
 
 
