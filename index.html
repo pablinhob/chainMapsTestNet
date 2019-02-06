@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Chain Maps v1</title>
+  </head>
+
+  <script id="headerTemplate" type="text/template">
+    <div class="">
+      <div class="logo"><a href=""><img src="img/logo_small.png"> Chain Maps v1</a></div>
+      <div class="webMenu">
+        <ul class="dropdown-menu">
+          <li><a href="#account/<%-accountIdName%>"><i class="fa fa-map"></i> Map</a></li>
+          <%if( accountIdName != false ) { %>
+            <li><a href="#account/<%-accountIdName%>/adminPlaces"><i class="fa fa-map-marker"></i> Edit map places</a></li>
+            <li><a href="#account/<%-accountIdName%>/adminAccount"><i class="fa fa-compass"></i> Edit map info</a></li>
+          <%}%>
+          <li><a class="displayAccountConfPopup" ><i class="fa fa-credit-card"></i> Account conf (ETH)</a></li>
+          <li><a  class="displayAboutPopup"><i class="fa fa-info-circle"></i> About</a></li>
+        </ul>
+        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+          <i class="fa fa-bars fa-2x"></i>
+        </button>
+      </div>
+
+    </div>
+  </script>
+
+  <script id="popupTransactionTemplate" type="text/template">
+    <div class="modal-header" style="padding:35px 50px;">
+      <h4><span class="glyphicon glyphicon-transfer"></span> Tansaction details</h4>
+    </div>
+    <div class="modal-body working" style="padding:40px 50px;">
+      <form role="form">
+        <div class="form-group">Eth account: <%= contract.currentEthAccount %></div>
+        <div class="form-group">
+          <label for="gaslimit"><span class="glyphicon glyphicon-signal"></span> Gas limit (<a target="_blank" href="https://kb.myetherwallet.com/gas/what-is-gas-ethereum.html">?</a>)</label>
+          <input type="text" class="form-control" id="gaslimit" value="<%- conf.defaultGasLimit %>">
+        </div>
+
+        <div class="form-group">
+          <label for="donate"><span class="glyphicon glyphicon-tint"></span> This project need your help. Do you want to donate? </label>
+          <select class="form-control" id="donate">
+            <option value="0">Not today</option>
+            <option value="0.0005">0.0005ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.0005*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+            <option value="0.001" selected>0.001ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.001*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+            <option value="0.002">0.002ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.002*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+            <option value="0.003">0.003ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.003*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+            <option value="0.01">0.01ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.01*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+            <option value="0.02">0.02ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.02*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+            <option value="0.04">0.04ETH  <%if(app.ethDollarPrice){%>(<%- parseFloat(0.04*app.ethDollarPrice).toFixed(2) %>$)<%}%></option>
+          </select>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="col-xs-2 center-block waiting" style="float:none; display:none;">
+      <div><i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i></div>
+      <div>Mining...</div>
+    </div>
+    <div class="error" style="float:none; display:none;">
+
+    </div>
+
+    <div class="modal-footer working">
+      <button class="btn btn-danger btn-default " data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+      <button class="btn btn-success pull-right confirmTransaction"><span class="glyphicon glyphicon-ok"></span> Confirm transaction</button>
+    </div>
+  </script>
+
+  <script id="popupInfoTemplate" type="text/template">
+    <div class="modal-header" style="padding:35px 50px;">
+      <h4><span class="glyphicon glyphicon-info-sign"></span> Guerrilla GIS</h4>
+    </div>
+    <div class="modal-body" style="padding:40px 50px;">
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success btn-default pull-right" data-dismiss="modal"> Close </button>
+    </div>
+  </script>
+
+  <script id="popupEthAccountConfTemplate" type="text/template">
+    <div class="modal-header" style="padding:35px 50px;">
+      <h4><span class="glyphicon glyphicon-lock"></span> Ethereum account configuration</h4>
+    </div>
+    <div class="modal-body" style="padding:40px 50px;">
+      <form role="form">
+        <div class="form-group">
+          <label for="psw"><span class="glyphicon glyphicon-credit-card"></span> Wallet type</label>
+          <select  class="form-control" >
+            <option>Private key address</option>
+            <option disabled>Ledger Nano S</option>
+            <option disabled>Trezor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Private key</label>
+          <input type="text" class="form-control" id="privateKeyAddress" placeholder="Your ETH private key here" value="<%=privateAddress%>">
+        </div>
+        <div class="form-group">
+          <div class="accountInfo"></div>
+        </div>
+
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+      <button id="saveAccountConf"  disabled class="btn btn-success pull-right"><span class="glyphicon glyphicon-off"></span> Save </button>
+    </div>
+  </script>
+
+
+  <script id="popupConfirmTemplate" type="text/template">
+
+    <div class="modal-body" style="padding:40px 50px;">
+      <form role="form">
+        <!--div class="form-group">
+          <label for="usrname"><span class="glyphicon glyphicon-user"></span> Username</label>
+          <input type="text" class="form-control" id="usrname" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+          <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
+          <input type="text" class="form-control" id="psw" placeholder="Enter password">
+        </div>
+        <div class="checkbox">
+          <label><input type="checkbox" value="" checked>Remember me</label>
+        </div>
+          <button type="submit" class="btn btn-success btn-block"><span class="glyphicon glyphicon-off"></span> Login</button-->
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success pull-right"><span class="glyphicon glyphicon-off"></span> Continue </button>
+      <button class="btn btn-danger btn-default pull-right" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+    </div>
+  </script>
+
+
+
+  <script id="accountChooserTemplate" type="text/template">
+    <div class="col-md-4 col-md-offset-4">
+      <div class="row">
+        <div id="logo" class="text-center">
+        <div><img src="img/logo_medium.png"> </div>
+        <h1>Chain Maps v1</h1><p>Avoid censorship using the blockchain</p>
+        </div>
+        <form role="form" class="accountForm" onSubmit="return false;">
+          <div class="form-group">
+            <div class="input-group">
+              <input id="1" class="form-control accountInput" type="text" name="account" placeholder="Your map name (ex: demomap)" required/>
+              <span class="input-group-btn">
+              <button class="btn btn-success accountSuccess" type="submit">
+              <i class="glyphicon glyphicon glyphicon-chevron-right" aria-hidden="true"></i>
+              </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </script>
+
+  <script id="mapTemplate" type="text/template">
+    <div id="mapContainer">
+    </div>
+  </script>
+
+  <script id="accountFormTemplate"  type="text/template">
+    <div class="container">
+
+      <div class="panel panel-info">
+      <% if( newAccount == true  ) { %>
+        <div class="panel-heading">Create new account </div>
+        <div class="panel-body">Panel Content</div>
+      <%}else {%>
+        <div class="panel-heading">Account editor </div>
+        <div class="panel-body">You are editing metadata of map "<%-accountIdName%>"</div>
+      <%}%>
+      </div>
+
+      <form id="signupForm" method="post" class="form-horizontal"  onSubmit="return false;">
+
+        <div class="form-group"  <% if( newAccount == false  ) { %> style="display:none;" <%}%>>
+          <div class="col-sm-5">
+            <input type="text" class="form-control" id="accountIdName" name="accountIdName" placeholder="Account name (without spaces)" value="<%- accountIdName %>"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-5">
+            <textarea class="form-control" id="accountDesc" name="accountDesc" placeholder="Map description, contact info, etc..." ><%- desc %></textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-5 col-sm-offset-4">
+            <div class="checkbox">
+            <label>
+              <input type="checkbox" id="clusterize" name="clusterize" value="clusterize"  <% if( clusterize == true ){%> checked <%}%> />Clusterize markers
+            </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-5">
+            <input type="text" class="form-control" id="accountLat" name="accountLat" placeholder="Latitude"  value="<%-lat%>" />
+            <input type="text"  class="form-control" id="accountLng" name="accountLng" placeholder="Longitude"  value="<%-lng%>" />
+            <input type="text"  class="form-control" id="accountZoom" name="accountZoom" placeholder="Zoom" value="<%-zoom%>"/>
+          </div>
+        </div>
+        <div id="divMap" style="width:400px;height:400px;"></div>
+        <!--div class="form-group">
+          <div class="col-sm-5 col-sm-offset-4">
+            <div class="checkbox">
+            <label>
+              <input type="checkbox" id="agree" name="agree" value="agree"/>I Understand
+            </label>
+            </div>
+          </div>
+        </div-->
+        <div class="form-group">
+          <div class="col-sm-9 col-sm-offset-4">
+            <button type="submit" class="btn btn-primary" name="signup" value="Sign up"><% if( newAccount == true  ) {%>Create account<%}else{%>Save account<%}%></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </script>
+
+
+  <script id="placeFormTemplate"  type="text/template">
+    <div class="container">
+      <div class="panel panel-info">
+      <% if( ttIndex == 0  ) { %>
+        <div class="panel-heading">Create new place </div>
+        <div class="panel-body">Panel Content blablablablabla</div>
+      <%}else {%>
+        <div class="panel-heading">place editor </div>
+        <div class="panel-body">You are editing place metadata</div>
+      <%}%>
+      </div>
+
+      <form id="placeForm" method="post" class="form-horizontal"  onSubmit="return false;">
+
+        <div class="form-group">
+          <div class="col-sm-5" style="display:none;">
+            <input type="text" class="form-control" id="ttIndex" name="ttIndex" placeholder="" value="<%- ttIndex %>"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-5">
+            <input type="text" class="form-control" id="placeTitle" name="placeTitle" placeholder="Place title" value="<%- title %>"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-5">
+            <textarea class="form-control" id="placeDesc" name="placeDesc" placeholder="Place Description" ><%- desc %></textarea>
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <div class="col-sm-5">
+            <input type="text" class="form-control" id="placeLat" name="placeLat" placeholder="Latitude"  value="<%-lat%>" />
+            <input type="text"  class="form-control" id="placeLng" name="placeLng" placeholder="Longitude"  value="<%-lng%>" />
+            <input type="text"  class="form-control" id="placeZoom" name="placeZoom" placeholder="Zoom" value="<%-zoom%>"/>
+          </div>
+        </div>
+        <div id="divMap"  style="width:400px;height:400px;"></div>
+        <!--div class="form-group">
+          <div class="col-sm-5 col-sm-offset-4">
+            <div class="checkbox">
+            <label>
+              <input type="checkbox" id="agree" name="agree" value="agree"/>I Understand
+            </label>
+            </div>
+          </div>
+        </div-->
+        <div class="form-group">
+          <div class="col-sm-9 col-sm-offset-4">
+            <button type="submit" class="btn btn-primary" name="signup" value="Sign up"><% if( ttIndex == 0  ) {%>Create place<%}else{%>Save place<%}%></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </script>
+
+  <script id="placesListTemplate"  type="text/template">
+    <div class="container listaEditor">
+      <div><button class="addPlace">Add place</button></div>
+        <div class="loading">Loading...</div>
+        <ul class="list-group listContainer">
+        </ul>
+      <div><button class="addPlace">Add place</button></div>
+    </div>
+  </script>
+
+  <script id="placesListElementTemplate"  type="text/template">
+    <li class="list-group-item" dataId="<%-id%>">
+      <div class="title"><%-title%></div>
+      <button class="delete"><i class="fa fa-trash fa-2x"></i></button>
+      <button class="edit"><i class="fa fa-edit fa-2x"></i></button>
+    </li>
+  </script>
+
+  <body>
+    <div class="header"></div>
+    <div class="content"></div>
+    <canvas id="bgCanvas"></canvas>
+
+
+      <div class="modal fade" id="popup" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700' rel='stylesheet' type='text/css'>
+  <link href='vendor/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href='vendor/font-awesome/css/font-awesome.min.css'>
+
+  <link href='vendor/leaflet/dist/leaflet.css' rel='stylesheet' type='text/css'>
+  <link href='vendor/leaflet.markercluster/dist/MarkerCluster.Default.css' rel='stylesheet' type='text/css'>
+  <link href='css/styles.css' rel='stylesheet' type='text/css'>
+
+  <!--script src="vendor/web3/dist/web3.min.js"></script-->
+  <script src="vendorStatic/web3.min.js"></script>
+  <script src="vendor/jquery/dist/jquery.min.js"></script>
+  <script src="vendor/jquery-validation/dist/jquery.validate.min.js"></script>
+  <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="vendor/underscore/underscore-min.js"></script>
+  <script src="vendor/backbone/backbone-min.js"></script>
+  <script src="vendor/leaflet/dist/leaflet.js"></script>
+  <script src="vendor/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <script src="vendorStatic/ethereumjs-tx-1.3.3.min.js"></script>
+  <script src="vendorStatic/ethereumjs-wallet-0.6.0.min.js"></script>
+
+  <script src="js/view/canvasAnimation.js"></script>
+
+  <script src="js/conf.js"></script>
+  <script src="js/contract.js"></script>
+  <script src="js/ethAccount.js"></script>
+
+  <script src="js/model/AccountModel.js"></script>
+  <script src="js/model/PlaceModel.js"></script>
+
+  <script src="js/collection/PlaceCollection.js"></script>
+
+  <script src="js/view/FormUtils.js"></script>
+
+  <script src="js/view/HeaderView.js"></script>
+  <script src="js/view/AccountChooserView.js"></script>
+  <script src="js/view/AccountFormView.js"></script>
+  <script src="js/view/PlaceFormView.js"></script>
+  <script src="js/view/PlacesListView.js"></script>
+  <script src="js/view/MapView.js"></script>
+  <script src="js/view/PopupView.js"></script>
+
+  <script src="js/router/appRouter.js"></script>
+
+
+  <script src="js/app.js"></script>
+  <!--script src="js/test.js"></script-->
+  <script>
+
+  </script>
+</html>
