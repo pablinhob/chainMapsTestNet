@@ -376,7 +376,7 @@
 
 /* Default icon URLs */
 .leaflet-default-icon-path {
-	background-image: url(http://localhost/ggis/vendor/leaflet/dist/images/);
+	background-image: url( vendor/leaflet/dist/images/);
 	}
 
 
