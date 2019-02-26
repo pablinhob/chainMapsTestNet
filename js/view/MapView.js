@@ -4,7 +4,8 @@ var MapView = Backbone.View.extend({
   markerCluster: false,
   placeCollection: new PlaceCollection(),
   events: {
-
+    'click .functionButtons .link': 'linkPopup',
+    'click .functionButtons .embed': 'embedPopup'
   },
   initialize: function(){
 
@@ -12,8 +13,16 @@ var MapView = Backbone.View.extend({
 
   setMapFullScreen: function() {
     var that = this;
+
     $('#mapContainer').css('width','100%');
-    $('#mapContainer').css('height', ( $(window).height()-$('.header').height() )+'px');
+    if(window.frameElement) {
+      $('#mapContainer').css('height', ( $(window).height())+'px');
+    }
+    else {
+      $('#mapContainer').css('height', ( $(window).height()-$('.header').height() )+'px');
+    }
+
+
   },
 
   render: function(){
@@ -51,11 +60,23 @@ var MapView = Backbone.View.extend({
   renderPlaces: function() {
     var that = this;
 
-    that.placeCollection.checkout(function(place){
+    //L.marker([-20,-20], {icon: L.icon.glyph({ prefix: 'mif', glyph: 'earth' }) }).addTo(that.map);
 
-      var contentMarker = '<h2>'+place.get('title')+'</h2><p>'+place.get('desc')+'</p>';
+    that.placeCollection.pull(function(place){
+
+      var contentMarker = '<h2>'+place.get('title')+'</h2>'+
+        '<p>'+place.get('desc')+'</p>' +
+        '<img src="'+place.get('imageLink')+'" width="300"/>';
+
+      var markerIcon= false;
+      if( place.get('category') != 0 ) {
+        markerIcon = {icon: L.icon.glyph({ prefix: 'glyphicon', glyph: Category[place.get('category')] }) };
+      }
+
+
       var marker = L.marker(
-        [place.get('lat'), place.get('lng')]
+        [place.get('lat'), place.get('lng')],
+        markerIcon
       );
       if( app.data.account.get('clusterize') == true ){
         that.markerCluster.addLayer(marker);
@@ -103,6 +124,23 @@ var MapView = Backbone.View.extend({
       that.renderPlaces();
     });
 
+  },
+
+  linkPopup: function() {
+    var that = this;
+
+    app.views.popup.renderInfo('<span class="glyphicon glyphicon-share"></span> Share your map', '<input type="text" value="'+window.location.href+'" style="width:100%;" readonly />' );
+  },
+
+  embedPopup: function() {
+    var that = this;
+    app.views.popup.renderInfo(
+      '<span>&lt;/&gt;</span> Embed this map in your page or blog',
+      '<textarea style="width:100%;height:100px;">'+
+        '<iframe name="'+app.accountIdName+'" scrolling="no" frameborder="no" src="'+window.location.protocol +'//'+window.location.host+'/indexEmbed.html" style="width: 400px; height: 400px;">'+
+        '</iframe>'+
+      '</textarea>'
+    );
   }
 
 

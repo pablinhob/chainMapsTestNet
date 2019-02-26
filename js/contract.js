@@ -66,13 +66,14 @@ var contract = {
   /*
     Contract functions call
   */
-  setAccountRaw: function(  data, onComplete, gasLimit ) {
+  setAccountRaw: function(  data, onComplete, gasLimit, value ) {
     var that = this;
 
     that.rawTransaction(
       contract.contractInstance.methods.setAccount(
         data.accountIdName,
         data.desc,
+        data.extraData,
         data.clusterize,
         data.lat,
         data.lng,
@@ -80,7 +81,8 @@ var contract = {
 
       ).encodeABI(),
       gasLimit,
-      function(res){  onComplete(res); }
+      function(res){  onComplete(res); },
+      value
     );
 
   },
@@ -134,7 +136,7 @@ var contract = {
     );
   },*/
 
-  setPlaceRaw: function( data, onComplete, gasLimit ) {
+  setPlaceRaw: function( data, onComplete, gasLimit, value ) {
     var that = this;
 
     that.rawTransaction(
@@ -144,14 +146,32 @@ var contract = {
         data.title,
         data.desc,
         data.imageLink,
+        data.category,
         data.lat,
         data.lng,
         data.zoom
       ).encodeABI(),
       gasLimit,
-      function(res){  onComplete(res); }
+      function(res){  onComplete(res); },
+      value
     );
   },
+
+
+  deletePlaceRaw: function( data, onComplete, gasLimit, value ) {
+    var that = this;
+
+    that.rawTransaction(
+      contract.contractInstance.methods.deletePlace(
+        data.accountIdName,
+        data.ttIndex
+      ).encodeABI(),
+      gasLimit,
+      function(res){  onComplete(res); },
+      value
+    );
+  },
+
 
   getPlace: function( data, onComplete ) {
     var that = this;
@@ -198,8 +218,24 @@ var contract = {
 
 
 
-  rawTransaction: function( data, gasLimit, onComplete) {
+  withdrawRAW: function( onComplete, gasLimit ) {
     var that = this;
+
+    that.rawTransaction(
+      contract.contractInstance.methods.withdraw().encodeABI(),
+      gasLimit,
+      function(res){  onComplete(res); },
+      0
+    );
+  },
+
+  rawTransaction: function( data, gasLimit, onComplete, value) {
+    var that = this;
+
+    var txValue = 0;
+    if( value ) {
+      txValue = value;
+    }
 
     that.web3.eth.getTransactionCount( ethAccount.getPublicKey() , function(error, result) {
       var nonce = result;
@@ -209,7 +245,7 @@ var contract = {
         "gasPrice": that.web3.utils.toHex( 0.8 ^1000000000),
         "gasLimit": that.web3.utils.toHex(gasLimit),
         "to": conf.contractAddress,
-        "value": "0x00",
+        "value": that.web3.utils.toHex( value ),//"0x00",
         "data": data,
         "chainId": conf.currentNetworkId //change the chainID accordingly
       };

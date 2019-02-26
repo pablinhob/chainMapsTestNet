@@ -13,9 +13,11 @@ var AccountFormView = Backbone.View.extend({
     var that = this;
 
     var formData = {
+      newDialogText: 'You are going to create a new map and store it into Ethereum blockchain. Make sure you can remember this name to use it in a future.',
       newAccount: false,
       accountIdName: '',
       desc: '',
+      extraData: '',
       clusterize: false,
       lat: '',
       lng: '',
@@ -24,6 +26,8 @@ var AccountFormView = Backbone.View.extend({
     //that.$el.html( that.tpl(formData) );
 
     if( app.accountIdName != 'false'  ) {
+
+      formData.newDialogText = 'You are going to create a new map called "'+app.accountIdName+'" and store it into Ethereum blockchain. Make sure you can remember this name to use it in a future.';
 
       contract.accountExist({ accountIdName:app.accountIdName }, function(res){
 
@@ -135,6 +139,7 @@ var AccountFormView = Backbone.View.extend({
     var acc = new AccountModel({
       accountIdName: $('#accountIdName').val(),
       desc: $('#accountDesc').val(),
+      extraData: '',
       clusterize: $('#clusterize').prop('checked'),
       lat: parseFloat( $('#accountLat').val() ),
       lng: parseFloat( $('#accountLng').val() ),
@@ -169,9 +174,8 @@ var AccountFormView = Backbone.View.extend({
         else {
             app.views.popup.renderTransactionError('Transaction failed. Try again changing "gas limit" value');
         }
-
-
-      }
+      },
+      d.donationValue
     );
 
   });

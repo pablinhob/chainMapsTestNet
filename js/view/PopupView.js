@@ -9,9 +9,9 @@ var PopupView = Backbone.View.extend({
   initialize: function(){
     var that = this;
   },
-  renderInfo: function(){
+  renderInfo: function(title,content){
     var that = this;
-    that.$el.html(that.tplInfo() );
+    that.$el.html(that.tplInfo({title:title,content:content}) );
     $('#popup').modal();
   },
 
@@ -22,7 +22,7 @@ var PopupView = Backbone.View.extend({
     that.$el.find('.confirmTransaction').on('click', function(){
       onSuccessFunction({
         gasLimit: parseInt( that.$el.find('#gaslimit').val() ),
-        donation: parseInt( that.$el.find('#donate').val() )
+        donationValue: parseInt( that.$el.find('#donate').val() )
       });
     });
   },
@@ -91,7 +91,7 @@ var PopupView = Backbone.View.extend({
           $('#popup .accountInfo').html(
             '<div style="color:green;">Address: ' +
             '<a target="_blank" href="https://etherscan.io/address/' + ethAccount.getPublicKeyFromPRivate(privateKey) + '">'+ethAccount.getPublicKeyFromPRivate(privateKey) +'</a> '+
-            '<br>Balance: '+ (b/1000000000000000000)+ ' ETH</div>'
+            '<br>Account balance: '+ (b/1000000000000000000)+ ' ETH</div>'
           );
           $('#popup #saveAccountConf').attr("disabled", false);
         }

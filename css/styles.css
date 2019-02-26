@@ -2,6 +2,10 @@ body {
   font-family: 'Roboto Condensed', sans-serif;
   background-color: #000;
 }
+body * {
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
 
 .header {
   height:60px;
@@ -37,6 +41,7 @@ body {
   position: absolute;
 }
   .webMenu .dropdown-menu {
+    z-index:1001;
     margin-left: -160px;
   }
     .webMenu .dropdown-menu a {
@@ -49,6 +54,19 @@ body {
   margin-top:60px;
 }
 
+.poweredby {
+
+  position:fixed;
+  left:10px;
+  bottom:-30px;
+}
+
+.content .createNewOne {
+  cursor:pointer;
+  color:#fff;
+  margin-top:5px;
+  font-size: 14px;
+}
 .content .accountForm {
   margin-top: 30px;
 }
@@ -58,6 +76,15 @@ body {
 }
 
 /* EDITOR LISTA */
+.listaEditor .loading {
+  margin-top:10px;
+  width:100%;
+  text-align: center;
+  font-size: 40px;
+}
+.listaEditor .listContainer {
+  margin-top:15px;
+}
 .listaEditor .listContainer button{
   float:right;
   margin-left: 10px;
@@ -82,7 +109,33 @@ body {
   margin-left: 50px;
   color:red;
 }
+
+
 /* MAP */
+
+.functionButtons {
+  z-index:1000;top:75px;right:10px;position:absolute;
+}
+
+.functionButtons .btn{
+  margin-left:10px;
+  width:50px;
+  height:50px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color:black;
+}
+
+.functionButtons .link span{
+  margin-left:px;
+  margin-top:3px;font-size:27px;color:white;
+}
+
+.functionButtons .embed span{
+  margin-left:-3px;
+  font-size:24px;color:white;font-weight:bold;
+}
+
 
 #mapContainer {
   width:100%;
@@ -95,5 +148,4 @@ body {
   top:0;
   left:0;
   z-index:-1000;
-
 }

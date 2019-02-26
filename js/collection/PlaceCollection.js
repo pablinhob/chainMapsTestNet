@@ -1,15 +1,20 @@
 var PlaceCollection = Backbone.Collection.extend({
   model: PlaceModel,
-  checkout: function( eachPlaceFunction ) {
+  pull: function( eachPlaceFunction, indexFunction ) {
     var that = this;
     contract.listPlaceIndex(
       {
         accountIdName: app.accountIdName
       },
       function(res){
-        $.each(res, function(i,ttIndex){
+        if(indexFunction) {
+          indexFunction(res);
+        }
 
-          that.getPlace(ttIndex, eachPlaceFunction);
+        $.each(res, function(i,ttIndex){
+          if( ttIndex != 0 ){
+            that.getPlace(ttIndex, eachPlaceFunction);
+          }
         });
       });
   },

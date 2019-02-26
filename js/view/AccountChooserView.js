@@ -2,7 +2,8 @@ var AccountChooserView = Backbone.View.extend({
   tpl: _.template( $("#accountChooserTemplate").html(), {} ),
   events: {
     //"click input[type=button]": "goAccount"
-    'submit .accountForm': 'goAccount'
+    'submit .accountForm': 'goAccount',
+    'click .createNewOne': 'createNewOne'
   },
   initialize: function(){
 
@@ -13,6 +14,12 @@ var AccountChooserView = Backbone.View.extend({
 
     app.data.account = false;
     app.data.locations = false;
+
+    $('.accountForm .accountInput').keypress(function( e ) {
+      if(e.which === 32){
+        return false;
+      }
+    });
   },
   goAccount: function() {
     var that = this;
@@ -28,14 +35,23 @@ var AccountChooserView = Backbone.View.extend({
         if (r == true) {
 
             app.views.popup.renderEthAccountConf(function(){
-              app.router.navigate('account/false/adminAccount',true);
+              app.router.navigate('account/'+accIdName+'/adminAccount',true);
             });
-      
+
 
 
         }
       }
     });
+  },
+
+  createNewOne: function() {
+    var that = this;
+
+    app.views.popup.renderEthAccountConf(function(){
+      app.router.navigate('account/false/adminAccount',true);
+    });
+
   }
 
 });
