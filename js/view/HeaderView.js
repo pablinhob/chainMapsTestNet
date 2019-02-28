@@ -6,11 +6,12 @@ var HeaderView = Backbone.View.extend({
   initialize: function(){
 
   },
-  render: function(){
+  render: function( fullOptionsRender ){
     var that = this;
 
     var tplData = {
-      accountIdName: false
+      accountIdName: false,
+      fullOptionsRender: fullOptionsRender
     }
 
     if( app.accountIdName != 'false' && app.accountIdName != false ) {
@@ -20,7 +21,7 @@ var HeaderView = Backbone.View.extend({
     that.$el.html( that.tpl(tplData) );
 
     $('.displayAccountConfPopup').on('click', function(){app.views.popup.renderEthAccountConf(function(){} ) });
-    $('.displayAboutPopup').on('click', function(){app.views.popup.renderInfo('<span class="glyphicon glyphicon-info-sign"></span> ChainMaps', 'INFO' ) });
+    $('.displayAboutPopup').on('click', function(){app.views.popup.renderInfo('<span class="glyphicon glyphicon-info-sign"></span> FAQ: Frequently Asked Questions', $('#FAQContent').html() ) });
   },
   goAccount: function() {
 

@@ -8,16 +8,25 @@
 
   <script id="headerTemplate" type="text/template">
     <div class="">
+      <%if(fullOptionsRender){%>
       <div class="logo"><a href=""><img src="img/logo_small.png"> Chain Maps</a></div>
+      <%}%>
       <div class="webMenu">
         <ul class="dropdown-menu">
-          <li><a href="#account/<%-accountIdName%>"><i class="fa fa-map"></i> Map</a></li>
-          <%if( accountIdName != false ) { %>
-            <li><a href="#account/<%-accountIdName%>/adminPlaces"><i class="fa fa-map-marker"></i> Edit map places</a></li>
-            <li><a href="#account/<%-accountIdName%>/adminAccount"><i class="fa fa-compass"></i> Edit map info</a></li>
+          <%if(fullOptionsRender){%>
+            <li><a href="#account/<%-accountIdName%>"><i class="fa fa-map"></i> Map</a></li>
+            <%if( accountIdName != false ) { %>
+              <li><a href="#account/<%-accountIdName%>/adminPlaces"><i class="fa fa-map-marker"></i> Edit map places</a></li>
+              <li><a href="#account/<%-accountIdName%>/adminAccount"><i class="fa fa-compass"></i> Edit map info</a></li>
+            <%}%>
           <%}%>
+          <li><a ></a></li>
           <li><a class="displayAccountConfPopup" ><i class="fa fa-credit-card"></i> Account conf (ETH)</a></li>
-          <li><a  class="displayAboutPopup"><i class="fa fa-info-circle"></i> About</a></li>
+          <li><a  class="displayAboutPopup"><i class="fa fa-info-circle"></i> FAQ</a></li>
+          <li><a ></a></li>
+          <%= conf.changeNetworkMenuOption %>
+          <li><a  href="<%=conf.appDownloadLink%>"><i class="fa fa-download"></i> Download app on ZIP</a></li>
+          <li><a target="_blank" href="https://github.com/pablinhob/chainMaps"><i class="fa fa-github"></i> Source code</a></li>
         </ul>
         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
           <i class="fa fa-bars fa-2x"></i>
@@ -25,6 +34,35 @@
       </div>
 
     </div>
+  </script>
+
+  <script id="FAQContent" type="text/template">
+    <h3>What is ChainMaps and what is it for </h3>
+    <p>
+      ChainMaps is a simple web GIS (Geographic Information System), decentralized and based on Ethereum blockchain. Its purpose is to make maps impossible to censor by third parties.
+    </p>
+    <p>
+      It’s perfect for independent organizations or users who do not want to depend or give their data to companies.
+    </p>
+    <h3>Can chainmaps.net or contract owners delete ou modify my maps? </h3>
+    <p>
+      Except you, no person or goberment can edit or delete your maps data. Your data is as secure as your Ethereum account is.
+    </p>
+    <h3>What i can do if website chainmaps.net is censored or closed by owners</h3>
+    <p>
+      At any moment, you can download the web source and use it on your local computer.
+    </p>
+    <h3>Why use Ethereum blockchain</h3>
+    <p>
+      Ethereum Blockchain provides an ideal environment for create decentralized applications. It is safe and because it’s intrinsic monetary value makes it very difficult to attack.
+    </p>
+
+    <h3>What data from my maps is stored in blockchain?</h3>
+    <p>
+      Limit the footprint to the fundamental blockchains, therefore only the important data will be stored in the smartContract. For example, map BG Tiles or images should be hosted on third-party sites. If you want to make it more sure, you can host your images into IPFS.
+    </p>
+
+
   </script>
 
   <script id="popupTransactionTemplate" type="text/template">
@@ -160,12 +198,12 @@
       <div class="row">
         <div id="logo" class="text-center">
         <div><img src="img/logo_medium.png"> </div>
-        <h1>Chain Maps</h1><p>Avoid censorship using the blockchain</p>
+        <h1>Chain Maps</h1><p>Avoid censorship using the Ethereum blockchain</p>
         </div>
         <form role="form" class="accountForm" onSubmit="return false;">
           <div class="form-group col-xs-12">
             <div class="input-group">
-              <input id="1" class="form-control accountInput" type="text" name="account" placeholder="Your map name (ex: demomap)" required/>
+              <input id="1" class="form-control accountInput" type="text" name="account" placeholder="Your map name" required/>
               <span class="input-group-btn">
               <button class="btn btn-success accountSuccess" type="submit">
               <i class="glyphicon glyphicon glyphicon-chevron-right" aria-hidden="true"></i>
@@ -361,9 +399,9 @@
   </script>
 
   <script id="placesListElementTemplate"  type="text/template">
-    <li class="list-group-item" dataId="<%-id%>">
-      <div class="title col-sm-10"><%-title%></div>
-      <div class="col-sm-2">
+    <li class="list-group-item listaPlaces" dataId="<%-id%>">
+      <div class="title col-sm-10 col-xs-6"><%-title%></div>
+      <div class="col-sm-2 col-xs-6">
         <button class="delete"><i class="fa fa-trash fa-2x"></i></button>
         <button class="edit"><i class="fa fa-edit fa-2x"></i></button>
       </div>
