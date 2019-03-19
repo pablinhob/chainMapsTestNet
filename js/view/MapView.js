@@ -57,6 +57,29 @@ var MapView = Backbone.View.extend({
     alert("Show in map "+ idPlace);
   },
 
+  enbedUrl: function(url) {
+  		var ret = '';
+      var regExpYoutube = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      var matchYoutube = url.match(regExpYoutube);
+      var regExpVimeo =  /(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)(?:[a-zA-Z0-9_\-]+)?/i;
+      var matchVimeo = url.match(regExpVimeo);
+
+
+      if (matchYoutube && matchYoutube[2].length == 11) {
+      	ret = '<iframe width="100%" height="220" src="http://www.youtube.com/embed/'  + matchYoutube[2] + '" frameborder="0" allowfullscreen></iframe>';
+      }
+      else if( matchVimeo ){
+        ret = '<iframe src="https://player.vimeo.com/video/'+matchVimeo[1]+'" width="100%" height="220"  frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+      }
+      else if( url.trim() != ''){
+        ret = '<img src="'+url+'" width="250"/></div>';
+      }
+
+    	return ret;
+  },
+
+
+
   renderPlaces: function() {
     var that = this;
 
@@ -64,9 +87,14 @@ var MapView = Backbone.View.extend({
 
     that.placeCollection.pull(function(place){
 
-      var contentMarker = '<div style="width:255px;height:350px;overflow-y:auto;overflow-x:hidden;"><h2>'+place.get('title')+'</h2>'+
-        '<p>'+place.get('desc')+'</p>' +
-        '<img src="'+place.get('imageLink')+'" width="250"/></div>';
+      var bubleHeight='';
+      if( place.get('imageLink').trim() != ''  ){
+        bubleHeight='height:350px;';
+      }
+
+      var contentMarker = '<div style="width:255px;' + bubleHeight + 'overflow-y:auto;overflow-x:hidden;"><h2>'+place.get('title')+'</h2>'+
+        '<p>'+place.get('desc')+'</p>'+ that.enbedUrl( place.get('imageLink') );
+
 
       var markerIcon= false;
       if( place.get('category') != 0 ) {
@@ -109,7 +137,7 @@ var MapView = Backbone.View.extend({
         app.data.account.get('zoom')
       );
       L.tileLayer(
-        'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+        conf.tilesUrl, {
         //maxZoom: 18,
         //scrollWheelZoom: true,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'

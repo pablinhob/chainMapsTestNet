@@ -2,8 +2,13 @@ var canvasId = 'bgCanvas';
 var canvasEnable = true;
 
 $(document).ready( function(){
-  resizeCanvas();
-  windowLoadHandler();
+  if(conf.testNetAdvice) {
+    resizeCanvas();
+    windowLoadHandler();
+  }
+  else {
+    $('#'+canvasId).hide();
+  }
 });
 
 $(window).resize( function(){

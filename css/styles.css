@@ -1,12 +1,16 @@
 body {
   font-family: 'Roboto Condensed', sans-serif;
   background-color: #000;
+  background-image: url("../img/collage/portada.jpg");
+  background-repeat: no-repeat;
+ background-attachment: fixed;
+ background-position: center;
 }
 body * {
   font-family: 'Roboto Condensed', sans-serif;
 }
 
-
+.donateFoot a {color:#fff;}
 .header {
   height:60px;
 
@@ -52,6 +56,13 @@ body * {
 .content #logo {
   color:#fff;
   margin-top:60px;
+  font-size: 16px;
+}
+
+@media (max-width: 600px) {
+  .content #logo {
+    margin-top:0px;
+  }
 }
 
 .content .poweredby {
@@ -61,7 +72,8 @@ body * {
   bottom
 }
 
-.content .createNewOne {
+
+.content .newOne a {
   cursor:pointer;
   color:#fff;
   margin-top:5px;
@@ -136,7 +148,12 @@ body * {
   font-size:24px;color:white;font-weight:bold;
 }
 
-
+.donateFoot {
+  color:#fff;
+}
+  .donateFoot .support {
+    font-size: 11px;
+  }
 
 #mapContainer {
   width:100%;
